@@ -70,11 +70,9 @@ func makeKeyrings (keys []string) ([]ssh.AuthMethod) {
 
 // -----------------------------------------------------------------------------
 func (client * RemoteClient) listenOutput () {
-  for {
     var buf bytes.Buffer
     io.Copy (&buf, client.stdout)
     client.Output <- buf.String ()
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -99,12 +97,6 @@ func (client * RemoteClient) newSession () (error) {
       return err
     }
     client.session = session
-    stdin, err := client.session.StdinPipe ()
-    if err != nil {
-      return err
-    }
-    client.stdin = stdin
-    go io.Copy (client.stdin, os.Stdin)
 
     stdout, err := client.session.StdoutPipe ()
     if err != nil {

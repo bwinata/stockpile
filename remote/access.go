@@ -27,9 +27,9 @@ func (a * Access) login (name string) (error) {
       if err := client.Connect (); err != nil {
         return err
       }
-      if err := client.newSession (); err != nil {
-        return err
-      }
+      // if err := client.newSession (); err != nil {
+      //   return err
+      // }
     }
   } else {
     return errors.New ("Invalid object. Cannot login")
@@ -54,12 +54,14 @@ func (a * Access) tick () {
 func (a * Access) spawn (client *RemoteClient) {
   // Let's run this forever, or at least until the program ends
   for {
+    client.newSession ()
     select {
     case timeStamp := <-client.timeSync:
       client.results = client.GetResources ()
       fmt.Printf ("Time: %v, Client: %s, Resources: %v\n", timeStamp, client.host, client.results)
       a.Sync.Done ()
     }
+    client.session.Close ()
   }
 }
 
