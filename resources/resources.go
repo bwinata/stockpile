@@ -9,5 +9,5 @@ const (
   CPU_USAGE_PERCENTAGE = "top -b -n2 -d 0.5 | grep \"Cpu(s)\" | tail -n 1 | awk '{print $2 + $4}'"
   MEMORY_USAGE_PERCENTAGE = ""
   MEMORY_USAGE_MB = "free -m | grep \"Mem:\" | awk '{print $3}'"
-  MEMORY_TOTAL_MB = "free -m | grep \"Mem:\" | awk '{print $2}'"
+  MEMORY_FREE_MB = "free -m | grep \"Mem:\" | awk '{print $2 - $3}'"
 )

@@ -25,6 +25,8 @@ type RemoteClient struct {
   Output     chan string
   stdout     io.Reader
   stdin      io.Writer
+  timeSync   chan time.Time
+  results    []string
 }
 
 /// -- Private
@@ -125,7 +127,7 @@ func (client * RemoteClient) GetResources () ([]string) {
     if err := client.Exec (fmt.Sprintf ("%s;%s;%s",
                                         resources.CPU_USAGE_PERCENTAGE,
                                         resources.MEMORY_USAGE_MB,
-                                        resources.MEMORY_TOTAL_MB)); err != nil {
+                                        resources.MEMORY_FREE_MB)); err != nil {
       fmt.Printf ("Cannot run command. Err=%v\n", err)
     }
 
@@ -165,6 +167,7 @@ func newClient (username, hostname, port string, keys []string, timeout time.Dur
   newClient.username = username
   newClient.host = fmt.Sprintf ("%s:%s", hostname, port)
   newClient.Output = make (chan string)
+  newClient.timeSync = make (chan time.Time)
   newClient.protoCfg = &ssh.ClientConfig {
     User    : username,
     Auth    : auths,

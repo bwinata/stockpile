@@ -2,6 +2,7 @@ package remote
 
 import (
   "fmt"
+  "sync"
   "time"
   "errors"
   "encoding/csv"
@@ -13,8 +14,9 @@ type Access struct {
   Writer          *csv.Writer
   ConsoleEnabled  bool
   PrivateKeys     []string
+  TimeStamp       time.Time
   Period          time.Duration
-  TimeSync        chan time.Time
+  Sync            sync.WaitGroup
 }
 
 /// -- Private Functions
@@ -39,7 +41,12 @@ func (a * Access) login (name string) (error) {
 func (a * Access) tick () {
   for {
     time.Sleep (a.Period)
-    a.TimeSync <- time.Now ()
+    now := time.Now ()
+
+    a.TimeStamp = now
+    for _, client := range (a.Clients) {
+      client.timeSync <- now
+    }
   }
 }
 
@@ -48,9 +55,33 @@ func (a * Access) spawn (client *RemoteClient) {
   // Let's run this forever, or at least until the program ends
   for {
     select {
-    case timeStamp := <-a.TimeSync:
-      fmt.Printf ("Time: %v, Client: %s, Resources:%v\n", timeStamp, client.host, client.GetResources ())
+    case timeStamp := <-client.timeSync:
+      client.results = client.GetResources ()
+      fmt.Printf ("Time: %v, Client: %s, Resources: %v\n", timeStamp, client.host, client.results)
+      a.Sync.Done ()
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+func (a * Access) csvSync () {
+  // Loop forever: Will wait until spawn routines are synced with resource values
+  // at which point they will get written to the .csv file.
+  for {
+    a.Sync.Add (len (a.Clients))
+    a.Sync.Wait ()
+
+    // Write to csv file
+    var record []string
+    record = append (record, a.TimeStamp.Format ("01/02/2006 15:04:05"))
+
+    for _, client := range (a.Clients) {
+      for _, val := range (client.results) {
+        record = append (record, val)
+      }
+    }
+    a.Writer.Write (record)
+    a.Writer.Flush ()
   }
 }
 
@@ -66,7 +97,6 @@ func NewRemoteAccess (writer *csv.Writer, period time.Duration, enableConsole bo
     newAccess.ConsoleEnabled = enableConsole
     newAccess.PrivateKeys = privateKeys
     newAccess.Period = period
-    newAccess.TimeSync = make (chan time.Time)
   }
   return newAccess
 }
@@ -99,8 +129,10 @@ func (a * Access) Start () {
        go a.spawn (client)
      }
    }
-   fmt.Printf ("Spawning clients...\n")
    go a.tick ()
+
+   a.csvSync () // Stay here
+
  } else {
    panic ("Access object is invalid!")
  }
