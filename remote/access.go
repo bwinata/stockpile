@@ -8,15 +8,20 @@ import (
   "encoding/csv"
 )
 
+/// --- Private Types
+type callback func () []string
+
 /// -- Public Data Types
 type Access struct {
   Clients         map[string]*RemoteClient
+  ConnectedEnum   []string
   Writer          *csv.Writer
   ConsoleEnabled  bool
   PrivateKeys     []string
   TimeStamp       time.Time
   Period          time.Duration
   Sync            sync.WaitGroup
+  cb              callback
 }
 
 /// -- Private Functions
@@ -55,7 +60,9 @@ func (a * Access) spawn (client *RemoteClient) {
     select {
     case timeStamp := <-client.timeSync:
       client.results = client.GetResources ()
-      fmt.Printf ("Time: %v, Client: %s, Resources: %v\n", timeStamp, client.host, client.results)
+      if a.ConsoleEnabled {
+        fmt.Printf ("Time: %v, Client: %s, Resources: %v\n", timeStamp, client.host, client.results)
+      }
       a.Sync.Done ()
     }
     client.session.Close ()
@@ -74,11 +81,21 @@ func (a * Access) csvSync () {
     var record []string
     record = append (record, a.TimeStamp.Format ("01/02/2006 15:04:05"))
 
-    for _, client := range (a.Clients) {
+    if a.cb != nil {
+      slice := a.cb ()
+      for _, elems := range (slice) {
+        record = append (record, elems)
+      }
+    }
+
+    for _, element := range (a.ConnectedEnum) {
+      fmt.Printf ("Client: %s\n", element)
+      client := a.Clients[element]
       for _, val := range (client.results) {
         record = append (record, val)
       }
     }
+
     a.Writer.Write (record)
     a.Writer.Flush ()
   }
@@ -86,7 +103,7 @@ func (a * Access) csvSync () {
 
 /// -- Public Functions
 // -----------------------------------------------------------------------------
-func NewRemoteAccess (writer *csv.Writer, period time.Duration, enableConsole bool, privateKeys []string) (*Access) {
+func NewRemoteAccess (writer *csv.Writer, cb callback, period time.Duration, enableConsole bool, privateKeys []string) (*Access) {
   newAccess := new (Access)
   if newAccess == nil {
     return nil
@@ -96,6 +113,7 @@ func NewRemoteAccess (writer *csv.Writer, period time.Duration, enableConsole bo
     newAccess.ConsoleEnabled = enableConsole
     newAccess.PrivateKeys = privateKeys
     newAccess.Period = period
+    newAccess.cb = cb
   }
   return newAccess
 }
@@ -125,6 +143,7 @@ func (a * Access) Start () {
        fmt.Printf ("Ouch! Cannot start client %s. Err = %v\n", key, err)
      } else {
        fmt.Println ("OK")
+       a.ConnectedEnum = append (a.ConnectedEnum, key)
        go a.spawn (client)
      }
    }
