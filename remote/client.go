@@ -53,7 +53,7 @@ func readKey (keyPath string) (ssh.Signer, error) {
 }
 
 // -----------------------------------------------------------------------------
-func makeKeyrings (keys []string) ([]ssh.AuthMethod) {
+func makeKeyrings (keys []string) ([]ssh.AuthMethod, error) {
   auths := []ssh.AuthMethod{}
 
   for _, key := range (keys) {
@@ -61,11 +61,10 @@ func makeKeyrings (keys []string) ([]ssh.AuthMethod) {
     if err == nil {
       auths = append (auths, ssh.PublicKeys (signer))
     } else {
-      fmt.Printf ("Cannot create keyring for key: %s. Err=%v\n", key, err)
-      return nil
+      return nil, err
     }
   }
-  return auths
+  return auths, nil
 }
 
 // -----------------------------------------------------------------------------
@@ -147,14 +146,17 @@ func (client * RemoteClient) Exec (command string) (error) {
 }
 
 // -----------------------------------------------------------------------------
-func newClient (username, hostname, port string, keys []string, timeout time.Duration) (*RemoteClient) {
+func newClient (username, hostname, port string, keys []string, timeout time.Duration) (*RemoteClient, error) {
   newClient := new (RemoteClient)
   if newClient == nil {
-    return nil
+    return nil, nil
   }
 
   // Attempt to create keyrings first
-  auths := makeKeyrings (keys)
+  auths, err := makeKeyrings (keys)
+  if err != nil {
+    return nil, err
+  }
 
   newClient.username = username
   newClient.host = fmt.Sprintf ("%s:%s", hostname, port)
@@ -166,5 +168,5 @@ func newClient (username, hostname, port string, keys []string, timeout time.Dur
     Timeout : timeout * time.Second,
   }
 
-  return newClient
+  return newClient, nil
 }

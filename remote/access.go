@@ -73,6 +73,7 @@ func (a * Access) spawn (client *RemoteClient) {
 func (a * Access) csvSync () {
   // Loop forever: Will wait until spawn routines are synced with resource values
   // at which point they will get written to the .csv file.
+
   for {
     a.Sync.Add (len (a.Clients))
     a.Sync.Wait ()
@@ -121,7 +122,11 @@ func NewRemoteAccess (writer *csv.Writer, cb callback, period time.Duration, ena
 func (a * Access) AddClient (id, username, host, port string) (error) {
   if a != nil {
     // Create new client
-    client := newClient (username, host, port, a.PrivateKeys, 5 * time.Second)
+    client, err := newClient (username, host, port, a.PrivateKeys, 5 * time.Second)
+    if err != nil {
+      return err
+    }
+
     if client == nil {
       return errors.New ("Invalid object. Cannot create new client")
     }
@@ -148,7 +153,7 @@ func (a * Access) Start () {
    }
    go a.tick ()
 
-   a.csvSync () // Stay here
+   go a.csvSync () // Spin off
 
  } else {
    panic ("Access object is invalid!")
