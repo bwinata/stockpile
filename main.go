@@ -11,8 +11,9 @@ import (
 
 // Temporary. Will soon get from config file when complete.
 const (
-  CLIENT_DITTO = "ditto.sensity.com"
-  CLIENT_DCC_DEV = "dcc-gina-dev.sensity.com"
+  DCC = "dcc-3c.sensity.com"
+  DD = "dd-3c.sensity.com"
+  DITTO = "ditto.sensity.com"
   PRIVATE_KEY = "/home/bwinata/.ssh/id_rsa.key"
 )
 
@@ -46,18 +47,25 @@ func main () {
   }
   fmt.Println ("OK")
 
-  // Add client: Ditto
-  fmt.Printf ("Add new client: %s...", CLIENT_DITTO)
-  err = access.AddClient ("ditto", "ubuntu", CLIENT_DITTO, "22")
+  // Add client:
+  fmt.Printf ("Add new client: %s...", DITTO)
+  err = access.AddClient ("ditto", "ubuntu", DITTO, "22")
   if err != nil {
-    fmt.Println ("Error: Cannot add client: %s", CLIENT_DITTO)
+    fmt.Println ("Error: Cannot add client: %s", DITTO)
   }
   fmt.Println ("OK")
 
-  fmt.Printf ("Add new client: %s...", CLIENT_DCC_DEV)
-  err = access.AddClient ("dcc", "ubuntu", CLIENT_DCC_DEV, "22")
+  fmt.Printf ("Add new client: %s...", DCC)
+  err = access.AddClient ("dcc", "ubuntu", DCC, "22")
   if err != nil {
-    fmt.Println ("Error: Cannot add client: %s", CLIENT_DCC_DEV)
+    fmt.Println ("Error: Cannot add client: %s", DCC)
+  }
+  fmt.Println ("OK")
+
+  fmt.Printf ("Add new client: %s...", DD)
+  err = access.AddClient ("dd", "ubuntu", DD, "22")
+  if err != nil {
+    fmt.Println ("Error: Cannot add client: %s", DD)
   }
   fmt.Println ("OK")
 

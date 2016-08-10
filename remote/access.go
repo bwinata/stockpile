@@ -27,9 +27,6 @@ func (a * Access) login (name string) (error) {
       if err := client.Connect (); err != nil {
         return err
       }
-      // if err := client.newSession (); err != nil {
-      //   return err
-      // }
     }
   } else {
     return errors.New ("Invalid object. Cannot login")
