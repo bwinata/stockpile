@@ -74,6 +74,17 @@ func (a * Access) csvSync () {
   // Loop forever: Will wait until spawn routines are synced with resource values
   // at which point they will get written to the .csv file.
 
+  // Append tags as first record to identify each of the columns
+  var tags []string
+  tags = append (tags, "Local Time")
+  tags = append (tags, "Custom")
+  for _, machine := range (a.ConnectedEnum) {
+    tags = append (tags, machine)
+  }
+
+  a.Writer.Write (tags)
+  a.Writer.Flush ()
+
   for {
     a.Sync.Add (len (a.Clients))
     a.Sync.Wait ()
@@ -151,8 +162,7 @@ func (a * Access) Start () {
        go a.spawn (client)
      }
    }
-   go a.tick ()
-
+   go a.tick () // Spin of periodic timer
    go a.csvSync () // Spin off
 
  } else {
