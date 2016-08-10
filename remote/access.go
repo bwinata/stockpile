@@ -89,7 +89,6 @@ func (a * Access) csvSync () {
     }
 
     for _, element := range (a.ConnectedEnum) {
-      fmt.Printf ("Client: %s\n", element)
       client := a.Clients[element]
       for _, val := range (client.results) {
         record = append (record, val)

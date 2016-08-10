@@ -54,7 +54,7 @@ func main () {
   }
   fmt.Println ("OK")
 
-  // Add client:
+  // Add clients:
   fmt.Printf ("Add new client: %s...", DITTO)
   err = access.AddClient ("ditto", "ubuntu", DITTO, "22")
   if err != nil {
@@ -69,16 +69,15 @@ func main () {
   }
   fmt.Println ("OK")
 
-  // fmt.Printf ("Add new client: %s...", DD)
-  // err = access.AddClient ("dd", "ubuntu", DD, "22")
-  // if err != nil {
-  //   fmt.Println ("Error: Cannot add client: %s", DD)
-  // }
-  // fmt.Println ("OK")
+  fmt.Printf ("Add new client: %s...", DD)
+  err = access.AddClient ("dd", "ubuntu", DD, "22")
+  if err != nil {
+    fmt.Println ("Error: Cannot add client: %s", DD)
+  }
+  fmt.Println ("OK")
 
   // Connect and create session for each client
   access.Start ()
-
 
   // Wait here forever
   forever := make (chan bool)
