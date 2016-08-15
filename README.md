@@ -6,9 +6,13 @@ A resource collater library, which enables an application to access resource usa
 
 ## Release Notes
 ##### Version 1.0
-###### Features
+###### Initial Features
 - Basic system CPU percentage usage
 - Memory Used (Percentage and MB)
 - Stored in .csv file
 - Each record tagged with the master machine's local timestamp
 - Custom fields provided by application layer via callback
+
+##### Version 1.1
+###### New Features
+- Add Swap Memory in MB if available
