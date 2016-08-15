@@ -115,10 +115,11 @@ func (client * RemoteClient) newSession () (error) {
 // -----------------------------------------------------------------------------
 func (client * RemoteClient) GetResources () ([]string) {
   if client != nil && client.Output != nil  {
-    if err := client.Exec (fmt.Sprintf ("%s;%s;%s",
+    if err := client.Exec (fmt.Sprintf ("%s;%s;%s;%s",
                                         resources.CPU_USAGE_PERCENTAGE,
                                         resources.MEMORY_USAGE_MB,
-                                        resources.MEMORY_USAGE_PERCENT)); err != nil {
+                                        resources.MEMORY_USAGE_PERCENT,
+                                        resources.SWAP_USAGE_MB)); err != nil {
       fmt.Printf ("Cannot run command. Err=%v\n", err)
     }
 

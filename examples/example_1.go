@@ -11,7 +11,7 @@ import (
 
 // Temporary. Will soon get from config file when complete.
 const (
-  MACHINE = "bwinata.my_machine.com" // IP addresses are allowed too
+  MACHINE = "ditto.sensity.com" // IP addresses are allowed too
   PRIVATE_KEY = "/home/bwinata/.ssh/id_rsa.key"
 )
 
@@ -53,24 +53,10 @@ func main () {
   fmt.Println ("OK")
 
   // Add clients:
-  fmt.Printf ("Add new client: %s...", DITTO)
-  err = access.AddClient ("ditto", "ubuntu", DITTO, "22")
+  fmt.Printf ("Add new client: %s...", MACHINE)
+  err = access.AddClient ("ditto", "ubuntu", MACHINE, "22")
   if err != nil {
-    fmt.Println ("Error: Cannot add client: %s", DITTO)
-  }
-  fmt.Println ("OK")
-
-  fmt.Printf ("Add new client: %s...", DCC)
-  err = access.AddClient ("dcc", "ubuntu", DCC, "22")
-  if err != nil {
-    fmt.Println ("Error: Cannot add client: %s", DCC)
-  }
-  fmt.Println ("OK")
-
-  fmt.Printf ("Add new client: %s...", DD)
-  err = access.AddClient ("dd", "ubuntu", DD, "22")
-  if err != nil {
-    fmt.Println ("Error: Cannot add client: %s", DD)
+    fmt.Println ("Error: Cannot add client: %s", MACHINE)
   }
   fmt.Println ("OK")
 

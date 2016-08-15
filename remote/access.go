@@ -78,6 +78,7 @@ func (a * Access) csvSync () {
   var tags []string
   tags = append (tags, "Local Time")
   tags = append (tags, "Custom")
+
   for _, machine := range (a.ConnectedEnum) {
     tags = append (tags, machine)
   }
