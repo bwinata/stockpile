@@ -11,9 +11,7 @@ import (
 
 // Temporary. Will soon get from config file when complete.
 const (
-  DCC = "dcc-3c.sensity.com"
-  DD = "dd-3c.sensity.com"
-  DITTO = "ditto.sensity.com"
+  MACHINE = "bwinata.my_machine.com" // IP addresses are allowed too
   PRIVATE_KEY = "/home/bwinata/.ssh/id_rsa.key"
 )
 
